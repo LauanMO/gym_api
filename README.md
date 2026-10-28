@@ -1,5 +1,7 @@
 # Gym API
 
+[![CI](https://github.com/LauanMO/gym_api/actions/workflows/ci.yml/badge.svg)](https://github.com/LauanMO/gym_api/actions/workflows/ci.yml)
+
 API REST desenvolvida com Flask para gerenciamento de uma academia.
 
 O projeto possui 3 recursos principais:

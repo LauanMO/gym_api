@@ -1,0 +1,39 @@
+# CI da Gym API: instala, procura erros graves de Python e sobe a API
+# com o cliente de teste do Flask, a cada push e pull request na main.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API (Flask)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt flake8
+      - name: Erros graves de Python (flake8)
+        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+      - name: Smoke test (cliente de teste do Flask)
+        run: |
+          python - <<'EOF'
+          from app import app
+          resposta = app.test_client().get("/")
+          assert resposta.status_code == 200, resposta.status_code
+          print(resposta.get_json())
+          EOF
