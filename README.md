@@ -141,6 +141,17 @@ Se um aluno possuir pagamentos vinculados, a exclusao do aluno retorna `409 Conf
 
 ## Endpoints
 
+### Auth
+
+- `POST /auth/register` cria um usuário (`username`, `email`, `password`)
+- `POST /auth/login` devolve o token JWT; com MFA ativo, envie também `totp_code`
+- `POST /auth/mfa/enable` gera o segredo do MFA e o QR code (exige token)
+- `POST /auth/mfa/verify` confirma o código do autenticador e ativa o MFA (exige token)
+- `POST /auth/mfa/disable` desativa o MFA com `password` e `totp_code` (exige token)
+- `GET /auth/me` retorna o usuário logado (exige token)
+
+O token vai no cabeçalho `Authorization: Bearer <token>` e vale por 1 hora. As rotas de alunos, treinos e pagamentos também exigem o token.
+
 ### Alunos
 
 - `POST /alunos/` cria um aluno
