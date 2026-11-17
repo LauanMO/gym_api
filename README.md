@@ -54,6 +54,8 @@ pip install -r requirements.txt
 python app.py
 ```
 
+O modo debug fica desligado por padrao. Para liga-lo em desenvolvimento, defina `FLASK_DEBUG=1` antes de executar.
+
 4. A API ficara disponivel em:
 
 ```text

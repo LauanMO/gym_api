@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from models import db, Treino
 from auth_middleware import token_required
 
@@ -38,9 +38,10 @@ def criar_treino():
         db.session.add(novo_treino)
         db.session.commit()
         return jsonify(novo_treino.to_dict()), 201
-    except Exception as e:
+    except Exception:
         db.session.rollback()
-        return jsonify({"erro": "Erro ao criar treino", "detalhes": str(e)}), 500
+        current_app.logger.exception("Erro ao criar treino")
+        return jsonify({"erro": "Erro ao criar treino"}), 500
 
 @treino_bp.route("/", methods=["GET"])
 @token_required
@@ -48,8 +49,9 @@ def listar_treinos():
     try:
         treinos = Treino.query.all()
         return jsonify([treino.to_dict() for treino in treinos]), 200
-    except Exception as e:
-        return jsonify({"erro": "Erro ao listar treinos", "detalhes": str(e)}), 500
+    except Exception:
+        current_app.logger.exception("Erro ao listar treinos")
+        return jsonify({"erro": "Erro ao listar treinos"}), 500
 
 @treino_bp.route("/<int:id>", methods=["GET"])
 @token_required
@@ -83,9 +85,10 @@ def atualizar_treino(id):
     try:
         db.session.commit()
         return jsonify(treino.to_dict()), 200
-    except Exception as e:
+    except Exception:
         db.session.rollback()
-        return jsonify({"erro": "Erro ao atualizar treino", "detalhes": str(e)}), 500
+        current_app.logger.exception("Erro ao atualizar treino")
+        return jsonify({"erro": "Erro ao atualizar treino"}), 500
 
 @treino_bp.route("/<int:id>", methods=["DELETE"])
 @token_required
@@ -98,6 +101,7 @@ def deletar_treino(id):
         db.session.delete(treino)
         db.session.commit()
         return jsonify({"mensagem": "Treino removido com sucesso"}), 200
-    except Exception as e:
+    except Exception:
         db.session.rollback()
-        return jsonify({"erro": "Erro ao deletar treino", "detalhes": str(e)}), 500
+        current_app.logger.exception("Erro ao deletar treino")
+        return jsonify({"erro": "Erro ao deletar treino"}), 500
